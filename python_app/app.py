@@ -1,39 +1,46 @@
-'''from flask import Flask, jsonify
+from flask import Flask, jsonify
 import psycopg2
+import os
 
 app = Flask(__name__)
 
-# Функция для подключения к базе данных
-def get_db_connection():
-    conn = psycopg2.connect(
-        host='my_pg',  # имя сервиса базы данных из docker-compose.yml
-        database='my_database',
-        user='postgres',
-        password='password'
-    )
-    return conn
+# Database connection settings
+db_host = os.getenv('DB_HOST', 'postgres')
+db_port = os.getenv('DB_PORT', '5432')
+db_name = os.getenv('DB_NAME', 'my_database')
+db_user = os.getenv('DB_USER', 'Marina')
+db_password = os.getenv('DB_PASSWORD', 'password')
 
-# Эндпоинт для получения данных из таблицы emp
-@app.route('/emp')
-def emp():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM emp;')
-    emp = cur.fetchall()
-    cur.close()
-    conn.close()
-    return jsonify(emp)
+# Route to fetch users
+def get_db_connection():
+    return psycopg2.connect(
+        host=db_host,
+        port=db_port,
+        database=db_name,
+        user=db_user,
+        password=db_password
+    )
+
+@app.route('/')
+def index():
+    return "Welcome for list users GET users"
+
+@app.route('/users/', methods=['GET'])
+def get_users():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, name, district FROM users;")
+        users = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        # Format data as JSON
+        users_list = [
+            {"id": user[0], "name": user[1], "district": user[2]} for user in users
+        ]
+        return jsonify(users_list)
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)'''
-
-from http.server import SimpleHTTPRequestHandler, HTTPServer
-
-class MyHandler(SimpleHTTPRequestHandler):
-    pass
-
-server_address = ('', 8000)
-httpd = HTTPServer(server_address, MyHandler)
-
-print("Starting server on port 8000...")
-httpd.serve_forever()
+    app.run(host='0.0.0.0', port=5000)
