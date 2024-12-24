@@ -8,7 +8,7 @@ app = Flask(__name__)
 db_host = os.getenv('DB_HOST', 'postgres')
 db_port = os.getenv('DB_PORT', '5432')
 db_name = os.getenv('DB_NAME', 'my_database')
-db_user = os.getenv('DB_USER', 'Marina')
+db_user = os.getenv('DB_USER', 'postgres')
 db_password = os.getenv('DB_PASSWORD', 'password')
 
 # Route to fetch users
@@ -30,13 +30,13 @@ def get_users():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT id, name, district FROM users;")
+        cursor.execute("SELECT id, name, surname FROM users;")
         users = cursor.fetchall()
         cursor.close()
         conn.close()
         # Format data as JSON
         users_list = [
-            {"id": user[0], "name": user[1], "district": user[2]} for user in users
+            {"id": user[0], "name": user[1], "last name": user[2]} for user in users
         ]
         return jsonify(users_list)
     except Exception as e:

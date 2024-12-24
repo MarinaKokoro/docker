@@ -34,8 +34,8 @@ services:
     environment:
       DB_HOST: my_pg
       DB_PORT: 5432
-      DB_NAME: users
-      DB_USER: Marina
+      DB_NAME: my_database
+      DB_USER: postgres
       DB_PASSWORD: 'password'
     depends_on:
       - postgres

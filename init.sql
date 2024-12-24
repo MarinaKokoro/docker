@@ -12,4 +12,4 @@ CREATE TABLE users (
 
 INSERT INTO users (name, surname) VALUES
     ('Marina', 'Kokorovets'),
-    ('Billi', 'Builder');
+    ('Miron', 'Shcherbina');
